@@ -5,31 +5,53 @@
   <style>
     body {
       font-family: Arial;
-      text-align: center;
-      margin-top: 80px;
-      background: #f5f5f5;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
     }
     .card {
       background: white;
-      padding: 20px;
-      border-radius: 12px;
+      padding: 25px;
+      border-radius: 15px;
       width: 320px;
-      margin: auto;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+    h2 {
+      margin-bottom: 15px;
     }
     input, select {
-      padding: 10px;
       width: 100%;
+      padding: 10px;
       margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
     }
-    button {
-      padding: 10px;
+    .amount-btns button {
+      margin: 5px;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: #eee;
+    }
+    .amount-btns button:hover {
+      background: #ddd;
+    }
+    .pay-btn {
       width: 100%;
-      background: green;
+      padding: 12px;
+      background: #28a745;
       color: white;
       border: none;
+      border-radius: 8px;
       cursor: pointer;
-      border-radius: 6px;
+      font-size: 16px;
+    }
+    .pay-btn:hover {
+      background: #218838;
     }
   </style>
 </head>
@@ -38,7 +60,13 @@
 <div class="card">
   <h2>UPI Payment</h2>
 
-  <input type="number" id="amount" placeholder="Enter ₹500–₹1000">
+  <div class="amount-btns">
+    <button onclick="setAmount(500)">₹500</button>
+    <button onclick="setAmount(750)">₹750</button>
+    <button onclick="setAmount(1000)">₹1000</button>
+  </div>
+
+  <input type="number" id="amount" placeholder="Enter amount ₹500–₹1000">
 
   <select id="person" onchange="checkOther()">
     <option value="">Who is paying?</option>
@@ -49,10 +77,14 @@
 
   <input type="text" id="otherName" placeholder="Enter name" style="display:none;">
 
-  <button onclick="pay()">Pay Now</button>
+  <button class="pay-btn" onclick="pay()">Pay Now</button>
 </div>
 
 <script>
+function setAmount(val) {
+  document.getElementById("amount").value = val;
+}
+
 function checkOther() {
   let person = document.getElementById("person").value;
   document.getElementById("otherName").style.display =
@@ -65,12 +97,12 @@ function pay() {
   let other = document.getElementById("otherName").value;
 
   if (amt < 500 || amt > 1000) {
-    alert("Enter amount between ₹500 and ₹1000");
+    alert("Enter ₹500–₹1000");
     return;
   }
 
   if (!person) {
-    alert("Please select who is paying");
+    alert("Select who is paying");
     return;
   }
 
@@ -85,7 +117,14 @@ function pay() {
 
   let upi = `upi://pay?pa=yourupi@bank&pn=Ayush&am=${amt}&cu=INR&tn=${encodeURIComponent(note)}`;
 
+  // Open UPI app
   window.location.href = upi;
+
+  // WhatsApp message (after slight delay)
+  setTimeout(() => {
+    let msg = `Hi, I have paid ₹${amt} (${name})`;
+    window.open(`https://wa.me/91XXXXXXXXXX?text=${encodeURIComponent(msg)}`);
+  }, 3000);
 }
 </script>
 
